@@ -25,12 +25,25 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
+		TArray<AActor*> spawnLocations;
+	UPROPERTY(EditAnywhere)
 		TSubclassOf<AActor> enemy;
 	UPROPERTY(EditAnywhere)
-		int spawnAmount = 3;
+		TArray<int> spawnAmount;
 	UPROPERTY(EditAnywhere)
 		float timeBetweenSpawn = 2.5f;
+	UPROPERTY(EditAnywhere)
+		float timeBetweenWaves = 10;
+
+	//Current wave
+	bool ongovingWave = false;
+	int activeEnemies = true;
 
 private:
+	//Timers
 	float spawnClock;
+	float waveClock;
+	//Waves
+	int currentWave = 0;
+	bool doneSpawning = false;
 };

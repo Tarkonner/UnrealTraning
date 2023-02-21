@@ -8,14 +8,14 @@ AEnemySpawner::AEnemySpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-		
+
+	waveClock = timeBetweenWaves;
 }
 
 // Called every frame
@@ -23,7 +23,20 @@ void AEnemySpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (spawnAmount > 0)
+	if (!ongovingWave)
+	{
+		waveClock -= DeltaTime;
+
+		if (waveClock <= 0)
+		{
+			ongovingWave = true;
+			waveClock = timeBetweenWaves;
+		}
+
+		return;
+	}
+
+	if (spawnAmount[currentWave] > 0)
 	{
 		if (spawnClock > 0)
 			spawnClock -= DeltaTime;
@@ -31,7 +44,7 @@ void AEnemySpawner::Tick(float DeltaTime)
 		if (spawnClock <= 0)
 		{
 			//Reset timer
-			spawnAmount--;
+			spawnAmount[currentWave]--;
 			spawnClock = timeBetweenSpawn;
 
 			//Spawn in world
@@ -44,9 +57,25 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 				FRotator rotator;
 
-				FVector spawnLocation = GetActorLocation();
+				//FVector spawnLocation = GetActorLocation();
+				AActor* spawnLocation = spawnLocations[FMath::RandRange(0, spawnLocations.Num() - 1)];
 
-				world->SpawnActor<AActor>(enemy, spawnLocation, rotator, spawnParameters);
+				world->SpawnActor<AActor>(enemy, spawnLocation->GetTargetLocation(), rotator, spawnParameters);
+			}
+
+			////Next wave
+			if (spawnAmount[currentWave] == 0 && !doneSpawning)
+			{
+				if (currentWave == spawnAmount.Num())
+				{
+					doneSpawning = true;
+				}
+				else
+				{
+					currentWave++;
+					activeEnemies = spawnAmount[currentWave];
+					ongovingWave = false;
+				}
 			}
 		}
 	}
