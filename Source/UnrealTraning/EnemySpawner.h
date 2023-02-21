@@ -15,6 +15,10 @@ public:
 	// Sets default values for this actor's properties
 	AEnemySpawner();
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "Custom")
+		void NextWave();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,7 +40,7 @@ public:
 		float timeBetweenWaves = 10;
 
 	//Current wave
-	bool ongovingWave = false;
+	bool ongoingWave = false;
 	int activeEnemies = true;
 
 private:
@@ -44,6 +48,6 @@ private:
 	float spawnClock;
 	float waveClock;
 	//Waves
-	int currentWave = 0;
+	int currentWave = -1;
 	bool doneSpawning = false;
 };

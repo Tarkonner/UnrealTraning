@@ -15,7 +15,7 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	waveClock = timeBetweenWaves;
+	//waveClock = timeBetweenWaves;
 }
 
 // Called every frame
@@ -23,18 +23,21 @@ void AEnemySpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!ongovingWave)
-	{
-		waveClock -= DeltaTime;
+	//if (!ongovingWave)
+	//{
+	//	waveClock -= DeltaTime;
 
-		if (waveClock <= 0)
-		{
-			ongovingWave = true;
-			waveClock = timeBetweenWaves;
-		}
+	//	if (waveClock <= 0)
+	//	{
+	//		ongovingWave = true;
+	//		waveClock = timeBetweenWaves;
+	//	}
 
+	//	return;
+	//}
+
+	if (!ongoingWave || doneSpawning)
 		return;
-	}
 
 	if (spawnAmount[currentWave] > 0)
 	{
@@ -63,21 +66,35 @@ void AEnemySpawner::Tick(float DeltaTime)
 				world->SpawnActor<AActor>(enemy, spawnLocation->GetTargetLocation(), rotator, spawnParameters);
 			}
 
-			////Next wave
-			if (spawnAmount[currentWave] == 0 && !doneSpawning)
-			{
-				if (currentWave == spawnAmount.Num())
-				{
-					doneSpawning = true;
-				}
-				else
-				{
-					currentWave++;
-					activeEnemies = spawnAmount[currentWave];
-					ongovingWave = false;
-				}
-			}
+			//////Next wave
+			//if (spawnAmount[currentWave] == 0 && !doneSpawning)
+			//{
+			//	if (currentWave == spawnAmount.Num())
+			//	{
+			//		doneSpawning = true;
+			//	}
+			//	else
+			//	{
+			//		currentWave++;
+			//		activeEnemies = spawnAmount[currentWave];
+			//		ongovingWave = false;
+			//	}
+			//}
 		}
 	}
 }
 
+void AEnemySpawner::NextWave()
+{
+	if (doneSpawning)
+		return;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Wave begins!"));
+
+	currentWave++;
+
+	if (currentWave >= spawnAmount.Num() - 1)
+		doneSpawning = true;
+
+	ongoingWave = true;
+}
